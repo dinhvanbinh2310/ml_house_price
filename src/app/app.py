@@ -136,6 +136,109 @@ if submitted:
             st.exception(e)
 
 st.markdown("---")
-st.markdown("### Thông tin về model")
-st.json(metadata)
+
+tab1, tab2, tab3 = st.tabs(["📊 Đánh giá Model", "📈 Biểu đồ", "ℹ️ Thông tin Model"])
+
+with tab1:
+    st.header("📊 Kết quả đánh giá Model")
+    
+    eval_dir = project_root / 'src' / 'evaluation'
+    metrics_file = eval_dir / 'evaluation_metrics.txt'
+    
+    if metrics_file.exists():
+        with open(metrics_file, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        
+        metrics_dict = {}
+        for line in lines[3:]:
+            if ':' in line:
+                parts = line.strip().split(':')
+                if len(parts) == 2:
+                    key = parts[0].strip()
+                    try:
+                        value = float(parts[1].strip())
+                        metrics_dict[key] = value
+                    except:
+                        pass
+        
+        if metrics_dict:
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("RMSE", f"{metrics_dict.get('RMSE', 0):.4f}", 
+                         help="Root Mean Squared Error - càng nhỏ càng tốt")
+            with col2:
+                st.metric("MAE", f"{metrics_dict.get('MAE', 0):.4f}",
+                         help="Mean Absolute Error - càng nhỏ càng tốt")
+            with col3:
+                st.metric("MAPE", f"{metrics_dict.get('MAPE', 0):.2f}%",
+                         help="Mean Absolute Percentage Error - càng nhỏ càng tốt")
+            with col4:
+                st.metric("R²", f"{metrics_dict.get('R2', 0):.4f}",
+                         help="R-squared - càng gần 1 càng tốt")
+            
+            st.markdown("---")
+            st.markdown("**Giải thích metrics:**")
+            st.markdown("""
+            - **RMSE (Root Mean Squared Error)**: Độ lệch trung bình bình phương, đo độ chính xác tổng thể
+            - **MAE (Mean Absolute Error)**: Độ lệch trung bình tuyệt đối, dễ hiểu hơn RMSE
+            - **MAPE (Mean Absolute Percentage Error)**: Phần trăm lỗi trung bình, cho biết độ chính xác theo %
+            - **R² (R-squared)**: Hệ số xác định, cho biết model giải thích được bao nhiêu % phương sai
+            """)
+        else:
+            st.text(metrics_content)
+    else:
+        st.info("Chưa có file đánh giá metrics")
+    
+    st.markdown("---")
+    st.subheader("Thông tin Model")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Số features", metadata.get('n_features', 'N/A'))
+        st.metric("Số mẫu train", metadata.get('n_train_samples', 'N/A'))
+    with col2:
+        st.metric("Số mẫu test", metadata.get('n_test_samples', 'N/A'))
+        if 'best_cv_score' in metadata:
+            st.metric("CV Score (MSE)", f"{metadata['best_cv_score']:.4f}")
+
+with tab2:
+    st.header("📈 Biểu đồ đánh giá")
+    
+    eval_dir = project_root / 'src' / 'evaluation'
+    
+    img1_path = eval_dir / 'predictions_vs_actual.png'
+    img2_path = eval_dir / 'residuals.png'
+    img3_path = eval_dir / 'feature_importance.png'
+    
+    if img1_path.exists():
+        st.subheader("Predictions vs Actual")
+        st.image(str(img1_path), use_container_width=True)
+        st.caption("So sánh giá trị dự đoán với giá trị thực tế. Đường chéo đỏ là đường lý tưởng (y=x).")
+    else:
+        st.info("Chưa có hình ảnh predictions vs actual")
+    
+    if img2_path.exists():
+        st.subheader("Residuals Analysis")
+        st.image(str(img2_path), use_container_width=True)
+        st.caption("Phân tích phần dư (residuals) để kiểm tra tính ngẫu nhiên của lỗi.")
+    else:
+        st.info("Chưa có hình ảnh residuals")
+    
+    if img3_path.exists():
+        st.subheader("Feature Importance (Top 20)")
+        st.image(str(img3_path), use_container_width=True)
+        st.caption("Top 20 features quan trọng nhất trong model.")
+    else:
+        st.info("Chưa có hình ảnh feature importance")
+
+with tab3:
+    st.header("ℹ️ Thông tin về Model")
+    
+    if 'best_params' in metadata:
+        st.subheader("Hyperparameters")
+        params = metadata['best_params']
+        for key, value in params.items():
+            st.text(f"{key}: {value}")
+    
+    st.subheader("Metadata đầy đủ")
+    st.json(metadata)
 

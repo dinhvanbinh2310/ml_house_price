@@ -95,25 +95,32 @@ if submitted:
             }
             
             df_input = pd.DataFrame(input_data)
-            
             df_input = preprocessor.handle_missing_values(df_input)
             
-            categorical_cols = df_input.select_dtypes(include=['object']).columns.tolist()
-            if categorical_cols:
-                df_input = preprocessor.encode_features(df_input, categorical_cols)
-            
             if preprocessor.feature_names:
-                missing_features = set(preprocessor.feature_names) - set(df_input.columns)
-                if missing_features:
-                    df_input = df_input.reindex(columns=list(df_input.columns) + list(missing_features), fill_value=0)
+                df_final = pd.DataFrame(0, index=[0], columns=preprocessor.feature_names)
                 
-                extra_features = set(df_input.columns) - set(preprocessor.feature_names)
-                if extra_features:
-                    df_input = df_input.drop(columns=list(extra_features))
+                categorical_cols = df_input.select_dtypes(include=['object']).columns.tolist()
+                numeric_cols = df_input.select_dtypes(include=[np.number]).columns.tolist()
                 
-                df_input = df_input[preprocessor.feature_names]
-            
-            X_scaled = preprocessor.scale_features(df_input)
+                for col in numeric_cols:
+                    if col in df_final.columns:
+                        df_final[col] = df_input[col].values[0]
+                
+                for col in categorical_cols:
+                    value = str(df_input[col].values[0]) if pd.notna(df_input[col].values[0]) else 'nan'
+                    for feature_name in preprocessor.feature_names:
+                        if feature_name.startswith(f'{col}_'):
+                            if feature_name.endswith(f'_{value}') or feature_name == f'{col}_{value}':
+                                df_final[feature_name] = 1
+                                break
+                
+                X_scaled = preprocessor.scale_features(df_final)
+            else:
+                categorical_cols = df_input.select_dtypes(include=['object']).columns.tolist()
+                if categorical_cols:
+                    df_input = preprocessor.encode_features(df_input, categorical_cols)
+                X_scaled = preprocessor.scale_features(df_input)
             
             prediction = model.predict(X_scaled)[0]
             

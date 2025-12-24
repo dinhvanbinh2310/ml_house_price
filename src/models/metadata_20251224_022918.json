@@ -10,7 +10,7 @@
   "n_features": 6106,
   "n_train_samples": 12597,
   "n_test_samples": 3150,
-  "model_path": "src\\models\\xgboost_model_20251224_022918.pkl",
-  "preprocessor_path": "src\\models\\preprocessor_20251224_022918.pkl",
+  "model_path": "xgboost_model_20251224_022918.pkl",
+  "preprocessor_path": "preprocessor_20251224_022918.pkl",
   "timestamp": "20251224_022918"
 }

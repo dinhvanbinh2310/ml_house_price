@@ -1,0 +1,62 @@
+BÁO CÁO KIỂM TRA DỰ ÁN
+========================
+
+Ngày kiểm tra: [Chạy script để cập nhật]
+
+1. CẤU TRÚC THƯ MỤC
+-------------------
+[ ] data/raw/
+[ ] data/processed/
+[ ] src/preprocess/
+[ ] src/models/
+[ ] src/evaluation/
+[ ] src/utils/
+[ ] src/main.ipynb
+[ ] report/draft/
+[ ] report/final/
+[ ] slides/
+[ ] environment/install.md
+[ ] environment/requirements.txt
+[ ] README.md
+
+2. DATASET
+----------
+[ ] Dataset có >= 5 cột
+[ ] Dataset có >= 500 dòng
+[ ] Dataset có thông tin nguồn
+[ ] Thống kê mô tả đã được tạo
+
+3. TIỀN XỬ LÝ
+-------------
+[ ] Xử lý missing values
+[ ] Xử lý outliers
+[ ] Encoding categorical features
+[ ] Scaling features
+[ ] Chia train/test (80/20)
+[ ] Dữ liệu đã xử lý được lưu vào data/processed/
+
+4. MÔ HÌNH
+----------
+[ ] Model XGBoost đã được tạo
+[ ] Hyperparameter tuning đã thực hiện
+[ ] Model được lưu (.pkl)
+[ ] Preprocessor được lưu
+[ ] Metadata được lưu
+[ ] File train_xgboost.py tồn tại
+[ ] File predict_xgboost.py tồn tại
+
+5. ĐÁNH GIÁ
+-----------
+[ ] Metrics được tính (RMSE, MAE, MAPE, R2)
+[ ] Hình ảnh được lưu vào src/evaluation/
+[ ] File evaluation.md được tạo
+
+6. BÁO CÁO
+----------
+[ ] Báo cáo PDF được tạo (report/final/)
+[ ] Slides được tạo (slides/)
+
+GHI CHÚ:
+- Chạy src/main.ipynb để thực hiện toàn bộ pipeline
+- Kiểm tra từng mục sau khi chạy xong
+
